@@ -129,7 +129,6 @@ class CourseUserView(CsrfExemptMixin,APIView):
             courses_old = user.courses.get(course=course_i)
             serializer = CoursesSerializer(courses_old)
         except:
-            user.courses.get(course=course_i)
             serializer = CoursesSerializer(courses)
             user.courses.add(courses.pk)
         return Response(serializer.data,status.HTTP_201_CREATED)
@@ -190,7 +189,12 @@ class MessageView(CsrfExemptMixin,APIView):
             messages=Messages.objects.filter(course=course).filter(to='student')
         messages=messages.order_by('-sent')
         serializer=MessagesSerializer(messages,many=True)
-        return Response(serializer.data)
+        data=serializer.data
+        for mess in data:
+            usr_id=mess["by"]
+            usr=User.objects.get(pk=usr_id)
+            mess["from_username"]=usr.username
+        return Response(data)
 
     @method_decorator(csrf_exempt)
     def post(self,request,pk,token,format=None):

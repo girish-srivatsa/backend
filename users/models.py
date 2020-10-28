@@ -21,12 +21,18 @@ class Courses(models.Model):
     course=models.ForeignKey(Course,on_delete=models.CASCADE,blank=True)
     status=models.CharField(default="student",max_length=20)
 
+    def __str__(self):
+        return self.course.code+':'+self.status
+
 
 class UserMy(models.Model):
     user=models.OneToOneField(User,on_delete=models.CASCADE)
     is_professor=models.BooleanField(default=False)
     tokens=models.ManyToManyField(Token,blank=True)
     courses=models.ManyToManyField(Courses,blank=True)
+
+    def __str__(self):
+        return self.user.username
 
 
 class Messages(models.Model):
